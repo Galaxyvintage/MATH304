@@ -1,2 +1,2 @@
 # MATH304
-Intro to game theories 
+Intro to game theory
