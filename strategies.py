@@ -31,7 +31,7 @@ class Strategy(ABC):
         pass
 
 
-class TitForTat(Strategy):
+class TitForTwoTat(Strategy):
     _history = []
 
     def next_move(self, opponent):
@@ -53,7 +53,7 @@ class TitForTat(Strategy):
         return self._history
 
 
-class TitForTwoTat(Strategy):
+class TitForTat(Strategy):
     _history = []
 
     def next_move(self, opponent):
@@ -154,7 +154,6 @@ class Random(Strategy):
 
     def next_move(self, opponent):
         nxt = random.choice([COOP, DEFECT])
-        print(nxt)
         return nxt
 
     def update_history(self, move):

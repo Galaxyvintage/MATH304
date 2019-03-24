@@ -5,19 +5,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 
 
-def main():
-    factory = StrategyFactory()
-    factory.register_builder('TitForTat', TitForTat)
-    factory.register_builder('TitForTwoTat', TitForTwoTat)
-    factory.register_builder('AlwaysCoop', AlwaysCoop)
-    factory.register_builder("AlwaysDefect", AlwaysDefect)
-    factory.register_builder("Alternate", Alternate)
-    factory.register_builder("Random", Random)
-    factory.register_builder("GrimTrigger", GrimTrigger)
-
-    payoff_matrix = [[(3, 3), (0, 5)],
-                     [(5, 0), (1, 1)]]
-
+def tournament(payoff_matrix, factory):
     strat_strings = ["TitForTat",  "TitForTwoTat", "GrimTrigger", "AlwaysCoop", "AlwaysDefect", "Random"]
     strats = []
     for x in strat_strings:
@@ -25,6 +13,7 @@ def main():
         strats.append((fst_instance, snd_instance))
 
     total_payoff = defaultdict(int)
+    tft_payoff = defaultdict(tuple)
 
     for strat in strats:
         pd = PrisonerDilemma(payoff_matrix, strat[0], strat[1])
@@ -34,14 +23,18 @@ def main():
     for strat_pair in combinations(strats, 2):
         strat_a = strat_pair[0][0]
         strat_b = strat_pair[1][0]
-        if strat_b.__class__.__name__ == "Random":
-            print("hello")
+
         pd = PrisonerDilemma(payoff_matrix, strat_a, strat_b)
         payoff_a, payoff_b = pd.play()
+        if strat_a.__class__.__name__ == "TitForTat":
+            if strat_b.__class__.__name__ == "AlwaysDefect":
+                print(payoff_a, payoff_b)
+            tft_payoff[strat_b.__class__.__name__] = (payoff_a, payoff_b);
         total_payoff[strat_a.__class__.__name__] += payoff_a
         total_payoff[strat_b.__class__.__name__] += payoff_b
 
     print(total_payoff)
+    print(tft_payoff)
     x_pos = range(len(total_payoff.keys()))
     new_x = [2 * i for i in x_pos]
     fig = plt.figure()
@@ -62,5 +55,22 @@ def main():
     plt.show()
 
 
-if __name__ == "__main__":
+
+
+def main():
+    factory = StrategyFactory()
+    factory.register_builder('TitForTat', TitForTat)
+    factory.register_builder('TitForTwoTat', TitForTwoTat)
+    factory.register_builder('AlwaysCoop', AlwaysCoop)
+    factory.register_builder("AlwaysDefect", AlwaysDefect)
+    factory.register_builder("Alternate", Alternate)
+    factory.register_builder("Random", Random)
+    factory.register_builder("GrimTrigger", GrimTrigger)
+
+    payoff_matrix = [[(3, 3), (0, 5)],
+                     [(5, 0), (1, 1)]]
+    tournament(payoff_matrix, factory)
+
+
+name__ == "__main__":
     main();
