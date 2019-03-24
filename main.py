@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 
 def main():
     factory = StrategyFactory()
-    factory.register_builder('TitForTAT', TitForTat)
+    factory.register_builder('TitForTat', TitForTat)
+    factory.register_builder('TitForTwoTat', TitForTwoTat)
     factory.register_builder('AlwaysCoop', AlwaysCoop)
     factory.register_builder("AlwaysDefect", AlwaysDefect)
     factory.register_builder("Alternate", Alternate)
@@ -17,11 +18,11 @@ def main():
     payoff_matrix = [[(3, 3), (0, 5)],
                      [(5, 0), (1, 1)]]
 
-    strat_strings = ["TitForTAT", "GrimTrigger", "AlwaysCoop", "AlwaysDefect", "Alternate", "Random"]
+    strat_strings = ["TitForTat",  "TitForTwoTat", "GrimTrigger", "AlwaysCoop", "AlwaysDefect", "Random"]
     strats = []
     for x in strat_strings:
-        fst, snd = factory.create(x), factory.create(x)
-        strats.append((fst, snd))
+        fst_instance, snd_instance = factory.create(x), factory.create(x)
+        strats.append((fst_instance, snd_instance))
 
     total_payoff = defaultdict(int)
 
@@ -33,6 +34,8 @@ def main():
     for strat_pair in combinations(strats, 2):
         strat_a = strat_pair[0][0]
         strat_b = strat_pair[1][0]
+        if strat_b.__class__.__name__ == "Random":
+            print("hello")
         pd = PrisonerDilemma(payoff_matrix, strat_a, strat_b)
         payoff_a, payoff_b = pd.play()
         total_payoff[strat_a.__class__.__name__] += payoff_a
@@ -48,7 +51,7 @@ def main():
     ax.set_xticks(new_x)
     ax.set_xticklabels(total_payoff.keys(), rotation=45)
     ax.set_ylabel("Total payoff")
-    ax.set_title("Axelrod Tournament: 200 rounds of Prisoner\'s Dilemma")
+    ax.set_title("Axelrod Tournament: 200 turns of Prisoner\'s Dilemma")
     ax.axhline(total_payoff["TitForTat"], color="grey")
 
     current_bar = 0

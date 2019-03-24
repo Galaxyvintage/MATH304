@@ -7,6 +7,7 @@
 from abc import ABC, abstractmethod
 import random
 
+random.seed(0)
 COOP = 0
 DEFECT = 1
 
@@ -31,6 +32,28 @@ class Strategy(ABC):
 
 
 class TitForTat(Strategy):
+    _history = []
+
+    def next_move(self, opponent):
+        nxt = COOP
+        if opponent.history and opponent.history[-1] == DEFECT:
+            defect_count = opponent.history.count(DEFECT)
+            if defect_count % 2 == 0:
+                nxt = DEFECT
+        return nxt
+
+    def update_history(self, move):
+        self._history.append(move)
+
+    def clear_history(self):
+        self._history = []
+
+    @property
+    def history(self):
+        return self._history
+
+
+class TitForTwoTat(Strategy):
     _history = []
 
     def next_move(self, opponent):
@@ -130,8 +153,8 @@ class Random(Strategy):
     _history = []
 
     def next_move(self, opponent):
-        random.seed(0)
-        nxt = random.sample([COOP, DEFECT], 1)[0]
+        nxt = random.choice([COOP, DEFECT])
+        print(nxt)
         return nxt
 
     def update_history(self, move):
